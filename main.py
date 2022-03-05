@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 
 from telegram import Update
 from telegram import InputFile
@@ -311,7 +312,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
 def main() -> None:
     """Run the bot."""
     # Create the Updater and pass it your bot's token.
-    updater = Updater("TOKEN")
+    updater = Updater(getenv("BOT_TOKEN"))
 
     # Get the dispatcher to register handlers
     dispatcher = updater.dispatcher
