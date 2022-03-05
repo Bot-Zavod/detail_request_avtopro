@@ -1,5 +1,6 @@
 import logging
 from os import getenv
+from dotenv import load_dotenv
 
 from telegram import Update
 from telegram import InputFile
@@ -16,6 +17,9 @@ from telegram.ext import MessageHandler
 from telegram.ext import CallbackContext
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import ConversationHandler
+
+# take environment variables from .env.
+load_dotenv()
 
 # Enable logging
 logging.basicConfig(
