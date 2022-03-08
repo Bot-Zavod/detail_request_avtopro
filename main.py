@@ -69,11 +69,11 @@ def start(update: Update, context: CallbackContext) -> int:
 
     # send message
     update.message.reply_text(
-        text='Наш бот допоможе ваш знайти необхідні запчастини по всій Україні',
+        text="""Натискай "Додати запит на деталь ⚙", щоб у п’ять кроків знайти необхідне у своєму регіоні.""",
         reply_markup=ReplyKeyboardMarkup(
             reply_keyboard, 
             one_time_keyboard=True, 
-            input_field_placeholder='Виберіть варіант нижче',
+            input_field_placeholder='Тисни',
             resize_keyboard=True
         )
     )
@@ -84,7 +84,7 @@ def helper(update: Update, context: CallbackContext) -> int:
 
     # send message
     update.message.reply_text(
-        text=""" Залиш заявку на шукаєму запчастину натиснувши 'Додати запит на деталь ⚙️' та виконуючи вказівки бота. """
+        text="""ℹ️ Вкажи якомога докладніше, яку саме запчастину та на яке авто шукаєш. Виконуй вказівки бота, щоб надати необхідну інформацію продавцям та прискорити відгук на свій запит."""
     )
 
     # logger
@@ -97,7 +97,7 @@ def channel_list(update: Update, context: CallbackContext) -> int:
 
     # send message
     update.message.reply_text(
-        text="""Якщо ти маєш деталі, знайди клієна по місцевим чатам:\n"""+'\n'.join([x for x in CHANNELS.values()])
+        text="""Якщо маєш запчастини на продаж, знайди покупця у місцевому чаті 🤝:\n"""+'\n'.join([x for x in CHANNELS.values()])
     )
 
     # logger
@@ -115,7 +115,7 @@ def ask(update: Update, context: CallbackContext) -> int:
 
     # send message
     update.message.reply_text(
-        text="🚗 Напишіть марку та модель вашого авто.",
+        text="1️⃣ Вкажи марку та модель свого авто:",
         reply_markup=ReplyKeyboardRemove(),
     )
 
@@ -134,7 +134,7 @@ def car(update: Update, context: CallbackContext) -> int:
     context.user_data['detail_request']['car'] = value
 
     update.message.reply_text(
-        text="Теперь напиши VIN номер автівки: "
+        text="2️⃣Напиши VIN номер авто:"
     )
 
     # logger
@@ -152,7 +152,7 @@ def vin(update: Update, context: CallbackContext) -> int:
     context.user_data['detail_request']['car_vin'] = value 
 
     update.message.reply_text(
-        text="⚙️ Яку запчастину ви шукаєте?"
+        text="3️⃣Напиши через кому всі запчастини, які тобі потрібні:"
     )
 
     # logger
@@ -213,7 +213,7 @@ def detail(update: Update, context: CallbackContext) -> int:
 
     # send message    
     update.message.reply_text(
-        text='📍 Майже все. Вкажи свою область, щоб наші диллери швидше тебе знайшли.',
+        text="4️⃣ Вкажи свою область, щоб наші продавці швидше надали тобі запчастини:",
         reply_markup=reply_markup
     )
 
@@ -242,7 +242,7 @@ def location(update: Update, context: CallbackContext) -> int:
     # send message
     context.bot.send_message(
         chat_id=chat_id,
-        text="☎️ Теперь надішли нам свій номер телефону щоб ми могли зв'язатися з тобою",
+        text="5️⃣ Залиш свій контактний номер:",
         reply_markup=ReplyKeyboardMarkup(
             [
                 [KeyboardButton(
@@ -279,7 +279,7 @@ def contact(update: Update, context: CallbackContext) -> int:
 
     # send message
     update.message.reply_text(
-        text=f"✅ Дякую за звернення. Ми зв'яжемося з вами найближчим часом!\nЗвернення знаходить в каналі - {channel_name}",
+        text=f"Дякую за звернення ✅\nОчікуй дзвінок від продавця найближчим часом!\nСтан запиту можна відстежувати у каналі - {channel_name}",
         reply_markup=ReplyKeyboardRemove()
     )
 
@@ -303,7 +303,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     user = update.message.from_user    
 
     update.message.reply_text(
-        text='Бувай.', 
+        text='Дякуємо за увагу, до побачення 👋', 
         reply_markup=ReplyKeyboardRemove()
     )
 
