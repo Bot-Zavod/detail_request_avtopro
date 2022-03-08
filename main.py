@@ -251,7 +251,7 @@ def location(update: Update, context: CallbackContext) -> int:
                 )]
             ], 
             one_time_keyboard=True, 
-            input_field_placeholder='Надішли свій номер натиснувши кнопку нижче',
+            input_field_placeholder='Надішли свій номер натиснувши кнопку нижче ⤵️',
             resize_keyboard=True
         ),
     )
