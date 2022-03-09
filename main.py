@@ -33,28 +33,30 @@ ASK, CAR, VIN, DETAIL, LOCATION, CONTACT = range(6)
 
 # Links for channels
 CHANNELS = {
-    'lviv': '@lvivavtopro', 
-    'kyiv': '@kyivavtopro',
-    'sumy': '@sumyavtopro',
-    'volyn': '@volynavtopro',
-    'odesa': '@odessaavtopro',
-    'ivano-frankivsk': '@ivanofrankivskavtopro',
-    'ternopil': '@ternopilavtopro',
-    'khmelnitsky': '@khmelnitskyavtopro',
-    'zakarpattya': '@zakarpattiaavtopro',
-    'chernivetskya': '@chernivtsiavtopro',
-    'vinnytsia': '@vinnytsiaavtopro',
-    'zhytomyr': '@zhytomyravtopro',
-    'dnipro': '@dniproavtopro',
-    'zaporozhye': '@zaporozhyeavtopro',
-    'kropyvnytskyi': '@kropyvnytskyiavtopro',
-    'mykolaiv': '@nikolaevavtopro',
-    'poltava': '@poltavaavtopro',
-    'kharkiv': '@kharkivavtopro',
-    'kherson': '@khersonavtopro',
-    'cherkasy': '@cherkasyavtopro',
-    'chernigiv': '@chernihivavtopro',
-    'rivne': '@rivneavtopro'
+    'lviv': '@lvivavtopro', #
+    'kyiv': '@kyivavtopro', #
+    'sumy': '@sumyavtopro', #
+    'volyn': '@volynavtopro', #
+    'odesa': '@odessaavtopro', #
+    'ivano-frankivsk': '@ivanofrankivskavtopro', #
+    'ternopil': '@ternopilavtopro', #
+    'khmelnitsky': '@khmelnitskyavtopro', #
+    'zakarpattya': '@zakarpattiaavtopro', #
+    'chernivetskya': '@chernivtsiavtopro', #
+    'vinnytsia': '@vinnytsiaavtopro', #
+    'zhytomyr': '@zhytomyravtopro', #
+    'dnipro': '@dniproavtopro', #
+    'zaporozhye': '@zaporozhyeavtopro', #
+    'kropyvnytskyi': '@kropyvnytskyiavtopro', #
+    'mykolaiv': '@nikolaevavtopro', #
+    'poltava': '@poltavaavtopro', #
+    'kharkiv': '@kharkivavtopro', #
+    'kherson': '@khersonavtopro', #
+    'cherkasy': '@cherkasyavtopro', #
+    'chernigiv': '@chernihivavtopro', #
+    'rivne': '@rivneavtopro', #
+    'lugansk': '@luganskavtopro', #
+    'donezk': '@donezkavtopto', #
 }
 
 
@@ -192,13 +194,13 @@ def detail(update: Update, context: CallbackContext) -> int:
     # Make the keyboard
     keyboard = [
         [
-            InlineKeyboardButton("Львів", callback_data='lviv'),
-            InlineKeyboardButton("Івано-Франківськ", callback_data='ivano-frankivsk'),
-            InlineKeyboardButton("Тернопіль", callback_data='ternopil')
+            InlineKeyboardButton("Львівська", callback_data='lviv'),
+            InlineKeyboardButton("Івано-Франківська", callback_data='ivano-frankivsk'),
+            InlineKeyboardButton("Тернопільська", callback_data='ternopil')
         ],
         [
-            InlineKeyboardButton("Хмельницький", callback_data='khmelnitsky'),
-            InlineKeyboardButton("Закарпаття", callback_data='zakarpattya'),
+            InlineKeyboardButton("Хмельницька", callback_data='khmelnitsky'),
+            InlineKeyboardButton("Закарпатська", callback_data='zakarpattya'),
             InlineKeyboardButton("Чернівецька", callback_data='chernivetskya')
         ],
         [
@@ -209,7 +211,7 @@ def detail(update: Update, context: CallbackContext) -> int:
         [
             InlineKeyboardButton("Дніпропетровська", callback_data='dnipro'),
             InlineKeyboardButton("Запорізька", callback_data='zaporozhye'),
-            InlineKeyboardButton("Кропивницька", callback_data='kropyvnytskyi')
+            InlineKeyboardButton("Кіровоградська", callback_data='kropyvnytskyi')
         ],
         [
             InlineKeyboardButton("Миколаївська", callback_data='mykolaiv'),
@@ -226,8 +228,10 @@ def detail(update: Update, context: CallbackContext) -> int:
             InlineKeyboardButton("Черкаська", callback_data='cherkasy'),
             InlineKeyboardButton("Чернігівська", callback_data='chernigiv')
         ],
-        [
-            InlineKeyboardButton("Рівненська", callback_data='rivne')
+        [   
+            InlineKeyboardButton("Луганська", callback_data='lugansk'),
+            InlineKeyboardButton("Рівненська", callback_data='rivne'),
+            InlineKeyboardButton("Донецька", callback_data='donezk'),
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
