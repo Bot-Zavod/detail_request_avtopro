@@ -18,7 +18,7 @@ from telegram.ext import CallbackContext
 from telegram.ext import CallbackQueryHandler
 from telegram.ext import ConversationHandler
 
-# take environment variables from .env.
+# Take environment variables from .env.
 load_dotenv()
 
 # Enable logging
@@ -28,8 +28,10 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# States for ConversationHandler
 ASK, CAR, VIN, DETAIL, LOCATION, CONTACT = range(6)
 
+# Links for channels
 CHANNELS = {
     'lviv': '@lvivavtopro', 
     'kyiv': '@kyivavtopro',
@@ -60,14 +62,13 @@ def start(update: Update, context: CallbackContext) -> int:
     """Starts the conversation and asks the user about their gender."""
     user = update.message.from_user
 
+    # Create the keyboard
     reply_keyboard = [
         [ KeyboardButton('Додати запит на деталь ⚙️') ],
         [ KeyboardButton('Наявні запити') ],
     ]
 
-    logger.info("%s: send /start command;", user.first_name)
-
-    # send message
+    # Send message
     update.message.reply_text(
         text="""Натискай "Додати запит на деталь ⚙", щоб у п’ять кроків знайти необхідне у своєму регіоні.""",
         reply_markup=ReplyKeyboardMarkup(
@@ -78,16 +79,20 @@ def start(update: Update, context: CallbackContext) -> int:
         )
     )
 
+    # Logger
+    logger.info("%s: send /start command;", user.first_name)
+
+
 def helper(update: Update, context: CallbackContext) -> int:
     """Command Help /help"""
     user = update.message.from_user
 
-    # send message
+    # Send message
     update.message.reply_text(
         text="""ℹ️ Вкажи якомога докладніше, яку саме запчастину та на яке авто шукаєш. Виконуй вказівки бота, щоб надати необхідну інформацію продавцям та прискорити відгук на свій запит."""
     )
 
-    # logger
+    # Logger
     logger.info("%s: send /help command;", user.first_name)
 
 
@@ -95,31 +100,29 @@ def channel_list(update: Update, context: CallbackContext) -> int:
     """Send list of chats to user"""
     user = update.message.from_user
 
-    # send message
+    # Send message
     update.message.reply_text(
         text="""Якщо маєш запчастини на продаж, знайди покупця у місцевому чаті 🤝:\n"""+'\n'.join([x for x in CHANNELS.values()])
     )
 
-    # logger
+    # Logger
     logger.info("%s: ask channel list;", user.first_name)
-
-
 
 
 def ask(update: Update, context: CallbackContext) -> int:
     """Stores the selected gender and asks for a photo."""
     user = update.message.from_user
 
-    # create user detail request
+    # Create user detail request in user_data
     context.user_data['detail_request'] = {}
 
-    # send message
+    # Send message and remove keyboard
     update.message.reply_text(
         text="1️⃣ Вкажи марку та модель свого авто:",
         reply_markup=ReplyKeyboardRemove(),
     )
 
-    # logger
+    # Logger
     logger.info("%s: start creating the request", user.first_name)
 
     return CAR
@@ -129,15 +132,16 @@ def car(update: Update, context: CallbackContext) -> int:
     """Stores the photo and asks for a location."""
     user = update.message.from_user
 
-    # set car name
+    # Set car name to user_data
     value = update.message.text
     context.user_data['detail_request']['car'] = value
 
+    # Send message
     update.message.reply_text(
         text="2️⃣Напиши VIN номер авто:"
     )
 
-    # logger
+    # Logger
     logger.info("%s: set %s as car;", user.first_name, value)
 
     return VIN
@@ -147,28 +151,45 @@ def vin(update: Update, context: CallbackContext) -> int:
     """Stores the location and asks for some info about the user."""
     user = update.message.from_user
 
-    # set car VIN name
+    # Set car VIN name to user_data
     value = update.message.text
     context.user_data['detail_request']['car_vin'] = value 
 
+    # Send message
     update.message.reply_text(
         text="3️⃣Напиши через кому всі запчастини, які тобі потрібні:"
     )
 
-    # logger
+    # Logger
     logger.info("%s: set VIN: %s;", user.first_name, value)
 
     return DETAIL
+
+def error_vin(update: Update, context: CallbackContext) -> int:
+    """Stores the location and asks for some info about the user."""
+    user = update.message.from_user
+    value = update.message.text
+
+    # Send message
+    update.message.reply_text(
+        text="Ви вказали неправильний VIN номер. Спробуйте ще раз."
+    )
+
+    # Logger
+    logger.info("%s: send invalid VIN: %s;", user.first_name, value)
+
+    return VIN
+
 
 def detail(update: Update, context: CallbackContext) -> int:
     """Stores the photo and asks for a location."""
     user = update.message.from_user
 
-    # set detail_name
+    # Set detail_name to user_data
     value = update.message.text
     context.user_data['detail_request']['detail'] = value   
 
-    # keayboard
+    # Make the keyboard
     keyboard = [
         [
             InlineKeyboardButton("Львів", callback_data='lviv'),
@@ -211,13 +232,13 @@ def detail(update: Update, context: CallbackContext) -> int:
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # send message    
+    # Send message    
     update.message.reply_text(
         text="4️⃣ Вкажи свою область, щоб наші продавці швидше надали тобі запчастини:",
         reply_markup=reply_markup
     )
 
-    # logger
+    # Logger
     logger.info("%s: ask detail: %s;", user.first_name, value)
 
     return LOCATION
@@ -228,18 +249,18 @@ def location(update: Update, context: CallbackContext) -> int:
     query = update.callback_query
     query.answer()
 
-    # get callback
+    # Get callback
     chat_id = update.callback_query.message.chat.id
     message_id = update.callback_query.message.message_id
 
-    # set request location name
+    # Set request location name to user_data
     location = update.callback_query.data
     context.user_data['detail_request']['location'] = location
 
-    # delete message with location inline keyboard
+    # Delete message with location inline keyboard
     context.bot.delete_message(chat_id, message_id)
 
-    # send message
+    # Send message
     context.bot.send_message(
         chat_id=chat_id,
         text="""5⃣ Натискай "Відправити номер📞", щоб продавець міг з тобою зв'язатися" """,
@@ -256,20 +277,37 @@ def location(update: Update, context: CallbackContext) -> int:
         ),
     )
 
-    # logger
+    # Logger
     logger.info("%s: set location: %s;", chat_id, location)
 
     return CONTACT
+
+
+def error_location(update: Update, context: CallbackContext) -> int:
+    """Stores the location and asks for some info about the user."""
+    user = update.message.from_user
+    value = update.message.text
+
+    # Send message
+    update.message.reply_text(
+        text="Надішли локацію за допомогою клавіатури у повідомлені вище."
+    )
+
+    # Logger
+    logger.info("%s: send invalid location: %s;", user.first_name, value)
+
+    return LOCATION
+
 
 def contact(update: Update, context: CallbackContext) -> int:
     """Get contact info about the user."""
     user = update.message.from_user
 
-    # get request info
+    # Get request info from user_data
     detail_request = context.user_data.get('detail_request', 'Not found')
 
     # get channel name
-    channel_name = CHANNELS[detail_request['location']] #"@detail_request_test" - test channel
+    channel_name = CHANNELS[detail_request['location']]
 
     # set contact
     contact = update.message.contact
@@ -277,25 +315,41 @@ def contact(update: Update, context: CallbackContext) -> int:
     context.user_data['detail_request']['contact']['user_id'] = contact.user_id
     context.user_data['detail_request']['contact']['phone_number'] = contact.phone_number
 
-    # send message
+    # Send message
     update.message.reply_text(
         text=f"Дякую за звернення ✅\nОчікуй дзвінок від продавця найближчим часом!\nСтан запиту можна відстежувати у каналі - {channel_name}",
         reply_markup=ReplyKeyboardRemove()
     )
 
-    # logger 1
+    # Logger 1
     logger.info("%s: set contact: %s;", user.first_name, contact)
 
-    # send request to channels
+    # Send request to channels
     context.bot.send_message(
         chat_id=channel_name,
         text=f"""✅ Нова заявка на запчастину!\n\n🚗 Автомобіль: {detail_request['car']};\n⚙️ Необхідна деталь: {detail_request['detail']};\nVIN номер: {detail_request['car_vin']};\n\nОбласть: {detail_request['location']};\n📞 Контакт: {detail_request['contact']['phone_number']};""",
     )
 
-    # logger 2
+    # Logger 2
     logger.info("Bot send %s`s request to %s;", user.first_name, channel_name)
 
     return ConversationHandler.END
+
+
+def error_contact(update: Update, context: CallbackContext) -> int:
+    """Stores the location and asks for some info about the user."""
+    user = update.message.from_user
+    value = update.message.text
+
+    # Send message
+    update.message.reply_text(
+        text="Надішліть номер кнопкою нижче"
+    )
+
+    # Logger
+    logger.info("%s: send invalid Contact: %s;", user.first_name, value)
+
+    return CONTACT
 
 
 def cancel(update: Update, context: CallbackContext) -> int:
@@ -307,7 +361,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
         reply_markup=ReplyKeyboardRemove()
     )
 
-    # logger
+    # Logger
     logger.info("User %s canceled the conversation.", user.first_name)
 
     return ConversationHandler.END
@@ -323,15 +377,43 @@ def main() -> None:
 
     # Add conversation handler
     conv_handler = ConversationHandler(
-        entry_points=[MessageHandler(Filters.regex('^Додати запит на деталь ⚙️$'), ask)],
+        entry_points=[
+            MessageHandler(Filters.regex('^Додати запит на деталь ⚙️$'), ask)
+        ],
         states={
-            CAR: [CommandHandler('cancel', cancel), MessageHandler(Filters.text, car)],
-            VIN: [CommandHandler('cancel', cancel), MessageHandler(Filters.text, vin)],
-            DETAIL: [CommandHandler('cancel', cancel), MessageHandler(Filters.text, detail)],
-            LOCATION: [CallbackQueryHandler(location)],
-            CONTACT: [CommandHandler('cancel', cancel), MessageHandler(Filters.contact, contact)],
+            CAR: [ 
+                CommandHandler('cancel', cancel),
+                MessageHandler(Filters.text, car)                
+            ],
+
+            VIN: [
+                MessageHandler(
+                    Filters.regex(r"^(?=.*[0-9])(?=.*[A-z])[0-9A-z-]{17}$"), vin
+                ),
+                CommandHandler('cancel', cancel),
+                MessageHandler(Filters.text, error_vin)
+            ],
+
+            DETAIL: [
+                CommandHandler('cancel', cancel),            
+                MessageHandler(Filters.text, detail)                
+            ],
+
+            LOCATION: [
+                CallbackQueryHandler(location),
+                CommandHandler('cancel', cancel),
+                MessageHandler(Filters.text, error_location)                
+            ],
+
+            CONTACT: [
+                MessageHandler(Filters.contact, contact),
+                CommandHandler('cancel', cancel),
+                MessageHandler(Filters.text, error_contact)
+            ],
         },
-        fallbacks=[CommandHandler('cancel', cancel)],
+        fallbacks=[
+            CommandHandler('cancel', cancel)
+        ]
     )
 
     dispatcher.add_handler(conv_handler)
@@ -346,10 +428,6 @@ def main() -> None:
 
     # Start the Bot
     updater.start_polling()
-
-    # Run the bot until you press Ctrl-C or the process receives SIGINT,
-    # SIGTERM or SIGABRT. This should be used most of the time, since
-    # start_polling() is non-blocking and will stop the bot gracefully.
     updater.idle()
 
 
