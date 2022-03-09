@@ -242,7 +242,7 @@ def location(update: Update, context: CallbackContext) -> int:
     # send message
     context.bot.send_message(
         chat_id=chat_id,
-        text="5️⃣ Залиш свій контактний номер:",
+        text="""5⃣ Натискай "Відправити номер📞", щоб продавець міг з тобою зв'язатися" """,
         reply_markup=ReplyKeyboardMarkup(
             [
                 [KeyboardButton(
