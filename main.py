@@ -172,7 +172,7 @@ def error_vin(update: Update, context: CallbackContext) -> int:
 
     # Send message
     update.message.reply_text(
-        text="Ви вказали неправильний VIN номер. Спробуйте ще раз."
+        text="VIN номер неправильний. Він має містити 17 символів. Спробуй ще раз."
     )
 
     # Logger
