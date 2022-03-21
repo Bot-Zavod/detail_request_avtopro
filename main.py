@@ -311,7 +311,7 @@ def contact(update: Update, context: CallbackContext) -> int:
     detail_request = context.user_data.get('detail_request', 'Not found')
 
     # get channel name
-    channel_name = "@autoprorequestdetailTEST"
+    channel_name = CHANNELS[detail_request['location']]
 
     # set contact
     contact = update.message.contact
